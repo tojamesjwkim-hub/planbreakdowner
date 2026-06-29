@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Planner">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Deadline Planner</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0Ij4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9IiMzNjQ2NUQiLz4KICA8ZyBmaWxsPSIjZmZmZmZmIj4KICAgIDxyZWN0IHg9IjI1IiB5PSI5IiAgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0Ii8+CiAgICA8cmVjdCB4PSIxNyIgeT0iMjUiIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIvPgogICAgPHJlY3QgeD0iMzMiIHk9IjI1IiB3aWR0aD0iMTQiIGhlaWdodD0iMTQiLz4KICAgIDxyZWN0IHg9IjkiICB5PSI0MSIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0Ii8+CiAgICA8cmVjdCB4PSIyNSIgeT0iNDEiIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIvPgogICAgPHJlY3QgeD0iNDEiIHk9IjQxIiB3aWR0aD0iMTQiIGhlaWdodD0iMTQiLz4KICA8L2c+Cjwvc3ZnPgo=">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAABmJLR0QA/wD/AP+gvaeTAAACdUlEQVR4nO3coYpUYRiAYVe2iFZBtk6ZMMmwYDFu276wLFutXolVMC0ibLLsHVhspglTpi6CVbF6A74gemb+w/g8F3D+L7zwccp3dHp29QB+5+HoAZgvcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIH6Xj0ANO7vjhfLRd7fnS92d7c3u350V07wDhWy8XLF89HT3EIrBWSOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA7SAV4TXG+2/8mju3Z0enY1egZmylohiYMkDpI4SPP6Wzl59vT1q8v9v/vm7Yf7r9/mNsZw84rjyeNHQ27av3v/cYZjDGetkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkOZ1TfD7j5+fPn8Z8u4MxxjOYXyStUISB0kcJHGQpvxbub44Xy0XE37wT6w325vbO2PUGP9iyjhWy8WQe/LG2BFrhSQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgzTlNcH1Zjvh1/76UWNMxWF8krVCEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkH4BEM1XO25dVhkAAAAASUVORK5CYII=">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { min-height: 100%; }
+  body { font-family: Arial, sans-serif; color: #000; background: #fff; line-height: 1.4; position: relative; min-height: 100vh; }
+  #bg { position: fixed; inset: 0; z-index: -1; background-color: #fff; background-size: cover; background-position: center; }
+
+  .head { border-bottom: 1px solid #000; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,.6); }
+  .head h1 { font-size: 16px; }
+  .head h1:hover { border-bottom: 1px dashed #999; }
+  .head h1.editing { border-bottom: 1px solid #000; cursor: text; }
+  .gear { width: 30px; height: 30px; border: 1px solid #000; background: rgba(255,255,255,.7); font-size: 16px; line-height: 28px; text-align: center; cursor: pointer; }
+
+  .setup { padding: 12px 14px; border-bottom: 1px solid #000; display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; background: rgba(255,255,255,.55); }
+  .setup .field { display: flex; flex-direction: column; gap: 3px; }
+  .setup label { font-size: 11px; font-weight: bold; }
+  .setup input { font-family: Arial, sans-serif; font-size: 14px; border: 1px solid #000; padding: 6px; background: rgba(255,255,255,.7); }
+  .setup input.ev { width: 150px; }
+  .setup input.tag { width: 90px; text-transform: uppercase; }
+  .setup button { font-family: Arial, sans-serif; font-size: 13px; padding: 7px 14px; border: 1px solid #000; background: rgba(255,255,255,.7); cursor: pointer; }
+  .setup button:active { background: #eee; }
+
+  .editing-banner { display: none; padding: 7px 14px; font-size: 12px; background: #000; color: #fff; }
+  .editing-banner.show { display: block; }
+  .editing-banner b { font-weight: bold; }
+
+  .meta { padding: 8px 14px; font-size: 12px; color: #333; border-bottom: 1px solid #ccc; display: none; background: rgba(255,255,255,.5); }
+  .meta.show { display: block; }
+
+  .boxes { padding: 8px 14px; display: flex; flex-direction: column; gap: 8px; }
+  .box { border: 1px solid #000; padding: 10px; background: rgba(255,255,255,.65); }
+  .box .bhead { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 7px; }
+  .box input.blabel { flex: 1 1 auto; min-width: 0; font-size: 12px; font-weight: bold; font-family: Arial, sans-serif; border: none; border-bottom: 1px solid #bbb; padding: 3px 2px; background: transparent; }
+  .box .btnrow { display: flex; gap: 5px; }
+  .box .light, .box .delday { font-family: Arial, sans-serif; font-size: 11px; padding: 4px 7px; border: 1px solid #000; background: rgba(255,255,255,.7); cursor: pointer; white-space: nowrap; }
+  .box .date { font-size: 11px; color: #555; margin-bottom: 6px; }
+  .box input.bt { width: 100%; font-family: Arial, sans-serif; font-size: 14px; border: none; border-bottom: 1px solid #999; padding: 5px 2px; margin-bottom: 6px; background: transparent; }
+  .box textarea.bd { width: 100%; font-family: Arial, sans-serif; font-size: 13px; border: 1px solid #ccc; padding: 6px; background: rgba(255,255,255,.4); resize: vertical; min-height: 46px; }
+  .box.grey { background: rgba(230,230,230,.85); }
+  .box.grey input.blabel { color: #888; }
+  .box.grey .light { background: #888; color: #fff; }
+
+  .addday { margin: 4px 14px 10px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .addday input { font-family: Arial, sans-serif; font-size: 13px; border: 1px solid #000; padding: 5px; background: rgba(255,255,255,.7); }
+  .addday button { font-family: Arial, sans-serif; font-size: 13px; padding: 6px 12px; border: 1px solid #000; background: rgba(255,255,255,.7); cursor: pointer; }
+
+  .actions { padding: 12px 14px; display: flex; gap: 10px; flex-wrap: wrap; border-top: 1px solid #000; background: rgba(255,255,255,.5); }
+  .actions button { font-family: Arial, sans-serif; font-size: 13px; padding: 9px 14px; border: 1px solid #000; cursor: pointer; }
+  .actions .primary { background: #000; color: #fff; }
+  .actions .primary:active { background: #444; }
+  .actions .ghost { background: rgba(255,255,255,.7); }
+
+  .projects { border-top: 1px solid #000; background: rgba(255,255,255,.5); }
+  .projects h2 { font-size: 12px; padding: 12px 14px 6px; }
+  .proj { border-bottom: 1px solid #ddd; }
+  .proj .ph { display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer; }
+  .proj .ph .arrow { font-size: 11px; width: 12px; }
+  .proj .ph .pname { flex: 1 1 auto; font-size: 14px; font-weight: bold; }
+  .proj .ph .pcount { font-size: 11px; color: #777; }
+  .proj .pbody { display: none; padding: 0 14px 12px; }
+  .proj.open .pbody { display: block; }
+  .proj .pbody .srow { display: flex; gap: 8px; padding: 4px 0; font-size: 13px; border-bottom: 1px solid #eee; }
+  .proj .pbody .srow .sd { font-weight: bold; min-width: 70px; }
+  .proj .pbody .srow .st { flex: 1 1 auto; }
+  .proj .pbody .srow.slight .sd, .proj .pbody .srow.slight .st { color: #999; }
+  .proj .pbody .pbtns { display: flex; gap: 8px; margin-top: 10px; }
+  .proj .pbody .pbtns button { font-family: Arial, sans-serif; font-size: 12px; padding: 6px 11px; border: 1px solid #000; background: rgba(255,255,255,.7); cursor: pointer; }
+  .projects .empty { padding: 6px 14px 14px; font-size: 13px; color: #555; }
+
+  .tools { display: flex; gap: 10px; flex-wrap: wrap; padding: 12px 14px; border-top: 1px solid #000; background: rgba(255,255,255,.5); }
+  .tools button { font-family: Arial, sans-serif; font-size: 12px; padding: 7px 11px; border: 1px solid #000; background: rgba(255,255,255,.7); cursor: pointer; }
+
+  .panel { position: fixed; inset: 0; background: rgba(0,0,0,.35); display: none; align-items: center; justify-content: center; z-index: 10; }
+  .panel.open { display: flex; }
+  .panel .card { background: #fff; width: 88%; max-width: 340px; border: 1px solid #000; padding: 16px; }
+  .panel h3 { font-size: 15px; margin-bottom: 10px; }
+  .panel label { font-size: 12px; font-weight: bold; display: block; margin: 12px 0 4px; }
+  .panel input[type=range] { width: 100%; }
+  .panel .sw { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .panel .sw div { width: 28px; height: 28px; border: 1px solid #000; cursor: pointer; }
+  .panel .pbtn { font-family: Arial, sans-serif; font-size: 13px; padding: 8px 10px; border: 1px solid #000; background: #fff; cursor: pointer; margin-top: 6px; }
+  .panel .prow { display: flex; gap: 8px; margin-top: 14px; }
+  .panel .prow button { flex: 1; font-family: Arial; font-size: 13px; padding: 9px; border: 1px solid #000; background: #fff; cursor: pointer; }
+  .panel .prow .primary { background: #000; color: #fff; }
+  .panel .note-sm { font-size: 11px; color: #666; margin-top: 8px; }
+</style>
+</head>
+<body>
+  <div id="bg"></div>
+  <input type="file" id="csvFile" accept=".csv,text/csv" style="display:none">
+
+  <div class="head">
+    <h1 id="appTitle" title="Click to rename" style="cursor: text; outline: none;">Deadline Planner</h1>
+    <div class="gear" id="gear">&#9881;</div>
+  </div>
+
+  <div class="setup">
+    <div class="field">
+      <label for="evName">Project name</label>
+      <input id="evName" class="ev" type="text" placeholder="e.g. Essay A">
+    </div>
+    <div class="field">
+      <label for="tag">Tag (optional)</label>
+      <input id="tag" class="tag" type="text" placeholder="ESSAYA">
+    </div>
+    <div class="field">
+      <label for="startDate">Start date</label>
+      <input id="startDate" type="date">
+    </div>
+    <div class="field">
+      <label for="dueDate">Due date (incl.)</label>
+      <input id="dueDate" type="date">
+    </div>
+    <button id="genBtn">Make boxes</button>
+  </div>
+
+  <div class="editing-banner" id="editBanner"></div>
+  <div class="meta" id="meta"></div>
+  <div class="boxes" id="boxes"></div>
+
+  <div class="addday" id="addDayWrap" style="display:none;">
+    <input type="date" id="addDayDate">
+    <button id="addDayBtn">+ add this day</button>
+    <span style="font-size:11px;color:#666;">(adds a blank box for any date)</span>
+  </div>
+
+  <div class="actions" id="actions" style="display:none;">
+    <button class="primary" id="icsBtn">Download calendar file (.ics)</button>
+    <button class="ghost" id="saveBtn">Save / update project</button>
+    <button class="ghost" id="newBtn">Start new (clear form)</button>
+  </div>
+
+  <div class="projects" id="projects">
+    <h2>SAVED PROJECTS</h2>
+    <div id="projectList"></div>
+  </div>
+
+  <div class="tools">
+    <button id="exportBtn">Export backup (CSV)</button>
+    <button id="importBtn">Import backup (CSV)</button>
+  </div>
+
+  <div class="panel" id="panel">
+    <div class="card">
+      <h3>Background</h3>
+      <label>Color</label>
+      <input type="color" id="bgColor" value="#ffffff">
+      <div class="sw" id="sw"></div>
+      <label>Or upload image</label>
+      <button class="pbtn" id="upBtn">choose photo</button>
+      <input type="file" id="bgFile" accept="image/*" style="display:none">
+      <label>Opacity <span id="opV">12%</span></label>
+      <input type="range" id="op" min="0" max="100" value="12">
+      <div class="note-sm">Uploaded images are downscaled to fit device storage.</div>
+      <div class="prow"><button id="clr">Clear</button><button class="primary" id="done">Done</button></div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  var APP='deadline-planner';
+  function k(key){ return APP+':'+key; }
+  var mem={};
+  function store(key,val){ try{ if(val===undefined) return localStorage.getItem(k(key)); localStorage.setItem(k(key),val); }catch(e){ if(val===undefined) return (k(key) in mem)?mem[k(key)]:null; mem[k(key)]=val; } }
+  function loadJSON(key,d){ var v=store(key); if(v==null) return d; try{ return JSON.parse(v); }catch(e){ return d; } }
+  function saveJSON(key,o){ store(key, JSON.stringify(o)); }
+
+  var DOW=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  function parseDate(s){ var p=s.split('-'); return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2])); }
+  function fmtLong(d){ return DOW[d.getDay()]+', '+MON[d.getMonth()]+' '+d.getDate(); }
+  function fmtShort(d){ return MON[d.getMonth()]+' '+d.getDate(); }
+  function isoOf(d){ return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+  function icsDate(d){ return d.getFullYear()+''+('0'+(d.getMonth()+1)).slice(-2)+''+('0'+d.getDate()).slice(-2); }
+
+  var projects = loadJSON('projects', []);
+  var bg = loadJSON('bg', {type:'color', color:'#ffffff', url:'', opacity:12});
+
+  var draft = null;
+  var editId = null;
+
+  var bgEl=document.getElementById('bg');
+  function mix(hex,op){ var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16); r=Math.round(255+(r-255)*op);g=Math.round(255+(g-255)*op);b=Math.round(255+(b-255)*op); return 'rgb('+r+','+g+','+b+')'; }
+  function applyBg(){ var op=bg.opacity/100; if(bg.type==='image'&&bg.url){ bgEl.style.backgroundColor='#fff'; bgEl.style.backgroundImage='url("'+bg.url+'")'; bgEl.style.opacity=op; } else { bgEl.style.backgroundImage='none'; bgEl.style.opacity=1; bgEl.style.backgroundColor=mix(bg.color||'#ffffff',op); } }
+
+  function buildDays(startStr,dueStr){
+    var start=parseDate(startStr), due=parseDate(dueStr);
+    if(due<start) return null;
+    var total=0; var c2=new Date(start.getTime());
+    while(c2<=due){ total++; c2=new Date(c2.getFullYear(),c2.getMonth(),c2.getDate()+1); }
+    var days=[]; var cur=new Date(start.getTime()); var idx=0;
+    while(cur<=due){
+      idx++;
+      days.push({ iso:isoOf(cur), label:'Day '+idx+'/'+total, title:'', details:'', light:false });
+      cur=new Date(cur.getFullYear(),cur.getMonth(),cur.getDate()+1);
+    }
+    return days;
+  }
+
+  var boxesEl=document.getElementById('boxes');
+  var metaEl=document.getElementById('meta');
+  var actionsEl=document.getElementById('actions');
+  var addDayWrap=document.getElementById('addDayWrap');
+  var editBanner=document.getElementById('editBanner');
+
+  function escapeHtml(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  function renderDraft(){
+    if(!draft){ boxesEl.innerHTML=''; metaEl.classList.remove('show'); actionsEl.style.display='none'; addDayWrap.style.display='none'; editBanner.classList.remove('show'); return; }
+
+    if(editId){ editBanner.innerHTML='Editing <b>'+escapeHtml(draft.name||'(untitled)')+'</b> \u2014 changes apply when you Save / update project.'; editBanner.classList.add('show'); }
+    else editBanner.classList.remove('show');
+
+    draft.days.sort(function(a,b){ return a.iso<b.iso?-1:(a.iso>b.iso?1:0); });
+
+    var n=draft.days.length;
+    metaEl.textContent = n+' day'+(n===1?'':'s')+' planned.';
+    metaEl.classList.add('show');
+
+    boxesEl.innerHTML='';
+    draft.days.forEach(function(day, i){
+      var d=parseDate(day.iso);
+      var box=document.createElement('div'); box.className='box'+(day.light?' grey':'');
+
+      var bhead=document.createElement('div'); bhead.className='bhead';
+      var lbl=document.createElement('input'); lbl.className='blabel'; lbl.type='text'; lbl.placeholder='label (e.g. Day 1/6)'; lbl.value=day.label||'';
+      lbl.addEventListener('input', function(){ day.label=lbl.value; });
+      var btnrow=document.createElement('div'); btnrow.className='btnrow';
+      var lightBtn=document.createElement('button'); lightBtn.className='light'; lightBtn.textContent=day.light?'light \u2713':'light day';
+      lightBtn.addEventListener('click', function(){ day.light=!day.light; renderDraft(); });
+      var delBtn=document.createElement('button'); delBtn.className='delday'; delBtn.textContent='remove';
+      delBtn.addEventListener('click', function(){ draft.days.splice(draft.days.indexOf(day),1); renderDraft(); });
+      btnrow.appendChild(lightBtn); btnrow.appendChild(delBtn);
+      bhead.appendChild(lbl); bhead.appendChild(btnrow);
+
+      var dateLine=document.createElement('div'); dateLine.className='date'; dateLine.textContent=fmtLong(d);
+
+      var title=document.createElement('input'); title.className='bt'; title.type='text'; title.placeholder='step title (e.g. outline)'; title.value=day.title;
+      title.addEventListener('input', function(){ day.title=title.value; });
+
+      var det=document.createElement('textarea'); det.className='bd'; det.placeholder='details (optional)'; det.value=day.details;
+      det.addEventListener('input', function(){ day.details=det.value; });
+
+      box.appendChild(bhead); box.appendChild(dateLine); box.appendChild(title); box.appendChild(det);
+      boxesEl.appendChild(box);
+    });
+
+    actionsEl.style.display='flex';
+    addDayWrap.style.display='flex';
+  }
+
+  document.getElementById('genBtn').addEventListener('click', function(){
+    var startStr=document.getElementById('startDate').value;
+    var dueStr=document.getElementById('dueDate').value;
+    if(!startStr||!dueStr){ alert('Enter both a start date and a due date.'); return; }
+    var days=buildDays(startStr,dueStr);
+    if(!days){ alert('The due date is before the start date. Check the dates.'); return; }
+    if(draft && draft.days.some(function(d){ return d.title||d.details; })){
+      if(!confirm('Making new boxes will replace the boxes currently on screen. Continue?')) return;
+    }
+    draft={ name:document.getElementById('evName').value.trim(), tag:document.getElementById('tag').value.trim().toUpperCase(), start:startStr, due:dueStr, days:days };
+    renderDraft();
+  });
+
+  document.getElementById('addDayBtn').addEventListener('click', function(){
+    if(!draft){ alert('Make boxes first, or load a project.'); return; }
+    var v=document.getElementById('addDayDate').value;
+    if(!v){ alert('Pick a date to add.'); return; }
+    if(draft.days.some(function(d){ return d.iso===v; })){ alert('That day is already in the plan.'); return; }
+    draft.days.push({ iso:v, label:'', title:'', details:'', light:false });
+    document.getElementById('addDayDate').value='';
+    renderDraft();
+  });
+
+  function syncDraftMeta(){ if(draft){ draft.name=document.getElementById('evName').value.trim(); draft.tag=document.getElementById('tag').value.trim().toUpperCase(); } }
+
+  document.getElementById('saveBtn').addEventListener('click', function(){
+    if(!draft || !draft.days.length){ alert('Nothing to save yet. Make boxes first.'); return; }
+    syncDraftMeta();
+    if(!draft.name){ if(!confirm('No project name set. Save as "(untitled)"?')) return; }
+    if(editId){
+      var idx=projects.findIndex(function(p){ return p.id===editId; });
+      if(idx>=0){ projects[idx]=Object.assign({}, draft, {id:editId}); }
+      else { editId=Date.now(); projects.push(Object.assign({}, draft, {id:editId})); }
+    } else {
+      editId=Date.now();
+      projects.push(Object.assign({}, draft, {id:editId}));
+    }
+    saveJSON('projects',projects);
+    renderProjects();
+    renderDraft();
+    alert('Saved.');
+  });
+
+  document.getElementById('newBtn').addEventListener('click', function(){
+    var hasContent = draft && draft.days.some(function(d){ return d.title||d.details; });
+    if(hasContent){
+      var ok=true; try{ ok=confirm('Clear the form and boxes on screen? (Saved projects below are not affected.)'); }catch(e){ ok=true; }
+      if(!ok) return;
+    }
+    draft=null; editId=null;
+    document.getElementById('evName').value='';
+    document.getElementById('tag').value='';
+    document.getElementById('dueDate').value='';
+    var t=new Date(); document.getElementById('startDate').value=isoOf(t);
+    renderDraft();
+  });
+
+  function icsEscape(s){ return String(s||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n'); }
+  function buildICS(p){
+    var lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Deadline Planner//EN','CALSCALE:GREGORIAN'];
+    var stamp=icsDate(new Date())+'T000000Z';
+    var count=0;
+    p.days.slice().sort(function(a,b){ return a.iso<b.iso?-1:1; }).forEach(function(day,i){
+      var t=(day.title||'').trim();
+      if(!t && !(day.details||'').trim()) return;
+      count++;
+      var d=parseDate(day.iso);
+      var next=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1);
+      var bits=[];
+      if(p.tag) bits.push('['+p.tag+']');
+      if(p.name) bits.push(p.name+':');
+      if(day.label) bits.push('('+day.label+')');
+      bits.push(t || ('Day '+(i+1)));
+      var summary=bits.join(' ');
+      if(day.light) summary+=' [light]';
+      lines.push('BEGIN:VEVENT');
+      lines.push('UID:dp-'+p.id+'-'+i+'-'+Date.now()+'@local');
+      lines.push('DTSTAMP:'+stamp);
+      lines.push('DTSTART;VALUE=DATE:'+icsDate(d));
+      lines.push('DTEND;VALUE=DATE:'+icsDate(next));
+      lines.push('SUMMARY:'+icsEscape(summary));
+      if((day.details||'').trim()) lines.push('DESCRIPTION:'+icsEscape(day.details.trim()));
+      lines.push('END:VEVENT');
+    });
+    lines.push('END:VCALENDAR');
+    return { text:lines.join('\r\n'), count:count };
+  }
+  function downloadICS(p){
+    var out=buildICS(p);
+    if(out.count===0){ alert('No boxes have a title or details yet, so there\'s nothing to add. Type at least one step first.'); return; }
+    var blob=new Blob([out.text],{type:'text/calendar'});
+    var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+    var safe=((p.name||'plan').replace(/[^a-z0-9]+/gi,'-').toLowerCase())||'plan';
+    a.download=safe+'-plan.ics'; a.click();
+    setTimeout(function(){
+      alert(out.count+' event'+(out.count===1?'':'s')+' downloaded.\n\nTo keep this project on its OWN calendar:\n1. In Google Calendar (web), create a calendar (left side, Other calendars, +, Create new calendar). Do this once per project.\n2. Settings, Import & Export, Import, choose this file, pick that calendar, Import.\n\nThat calendar then auto-syncs to your phone, and deleting the whole calendar later removes every event at once.');
+    },100);
+  }
+  document.getElementById('icsBtn').addEventListener('click', function(){ if(!draft) return; syncDraftMeta(); downloadICS(Object.assign({id:editId||'draft'}, draft)); });
+
+  var projectList=document.getElementById('projectList');
+  function renderProjects(){
+    if(!projects.length){ projectList.innerHTML='<div class="empty">No saved projects yet. Make boxes above, then Save.</div>'; return; }
+    projectList.innerHTML='';
+    projects.slice().reverse().forEach(function(p){
+      var wrap=document.createElement('div'); wrap.className='proj';
+      var ph=document.createElement('div'); ph.className='ph';
+      var arrow=document.createElement('span'); arrow.className='arrow'; arrow.textContent='\u25b6';
+      var nm=document.createElement('span'); nm.className='pname'; nm.textContent=(p.tag?('['+p.tag+'] '):'')+(p.name||'(untitled)');
+      var cnt=document.createElement('span'); cnt.className='pcount'; cnt.textContent=p.days.length+' day'+(p.days.length===1?'':'s');
+      ph.appendChild(arrow); ph.appendChild(nm); ph.appendChild(cnt);
+      ph.addEventListener('click', function(){ wrap.classList.toggle('open'); arrow.textContent=wrap.classList.contains('open')?'\u25bc':'\u25b6'; });
+
+      var body=document.createElement('div'); body.className='pbody';
+      var sorted=p.days.slice().sort(function(a,b){ return a.iso<b.iso?-1:1; });
+      body.innerHTML = sorted.map(function(day){
+        var d=parseDate(day.iso);
+        var t=(day.title||'').trim();
+        return '<div class="srow'+(day.light?' slight':'')+'"><span class="sd">'+escapeHtml(day.label||fmtShort(d))+'</span><span class="st">'+fmtShort(d)+(t?(' \u2014 '+escapeHtml(t)):' \u2014 (empty)')+(day.light?' [light]':'')+'</span></div>';
+      }).join('');
+
+      var pbtns=document.createElement('div'); pbtns.className='pbtns';
+      var edit=document.createElement('button'); edit.textContent='Edit / revise';
+      edit.addEventListener('click', function(){ loadForEdit(p.id); });
+      var ics=document.createElement('button'); ics.textContent='Download .ics';
+      ics.addEventListener('click', function(){ downloadICS(p); });
+      var del=document.createElement('button'); del.textContent='Delete';
+      del.addEventListener('click', function(){ if(confirm('Delete project "'+(p.name||'(untitled)')+'"? This cannot be undone.')){ projects=projects.filter(function(x){ return x.id!==p.id; }); if(editId===p.id){ draft=null; editId=null; renderDraft(); } saveJSON('projects',projects); renderProjects(); } });
+      pbtns.appendChild(edit); pbtns.appendChild(ics); pbtns.appendChild(del);
+      body.appendChild(pbtns);
+
+      wrap.appendChild(ph); wrap.appendChild(body);
+      projectList.appendChild(wrap);
+    });
+  }
+
+  function loadForEdit(id){
+    var p=projects.find(function(x){ return x.id===id; });
+    if(!p) return;
+    draft=JSON.parse(JSON.stringify(p));
+    editId=id;
+    document.getElementById('evName').value=p.name||'';
+    document.getElementById('tag').value=p.tag||'';
+    document.getElementById('startDate').value=p.start||'';
+    document.getElementById('dueDate').value=p.due||'';
+    renderDraft();
+    window.scrollTo(0,0);
+  }
+
+  document.getElementById('evName').addEventListener('input', function(){ if(draft) draft.name=this.value.trim(); });
+  document.getElementById('tag').addEventListener('input', function(){ if(draft) draft.tag=this.value.trim().toUpperCase(); });
+
+  function csvCell(s){ s=String(s==null?'':s); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }
+  function exportCSV(){
+    var out=[['project_id','project_name','tag','start','due','day_iso','day_label','title','details','light']];
+    projects.forEach(function(p){
+      p.days.forEach(function(day){
+        out.push([p.id, p.name||'', p.tag||'', p.start||'', p.due||'', day.iso, day.label||'', day.title||'', day.details||'', day.light?'1':'0']);
+      });
+      if(!p.days.length) out.push([p.id, p.name||'', p.tag||'', p.start||'', p.due||'', '', '', '', '', '']);
+    });
+    var csv=out.map(function(r){ return r.map(csvCell).join(','); }).join('\n');
+    var blob=new Blob([csv],{type:'text/csv'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='deadline-planner-backup.csv'; a.click();
+  }
+  function parseCSV(text){ var rows=[],row=[],cur='',inq=false; for(var i=0;i<text.length;i++){ var ch=text[i]; if(inq){ if(ch==='"'){ if(text[i+1]==='"'){ cur+='"'; i++; } else inq=false; } else cur+=ch; } else { if(ch==='"') inq=true; else if(ch===',') { row.push(cur); cur=''; } else if(ch==='\n'){ row.push(cur); rows.push(row); row=[]; cur=''; } else if(ch==='\r'){} else cur+=ch; } } if(cur.length||row.length){ row.push(cur); rows.push(row); } return rows; }
+  function importCSV(text){
+    var rows=parseCSV(text).filter(function(r){ return r.length && r.join('').trim().length; });
+    if(!rows.length){ alert('Empty file.'); return; }
+    var start=0; if((rows[0][0]||'').toLowerCase().indexOf('project_id')!==-1) start=1;
+    var byId={}; var order=[];
+    for(var i=start;i<rows.length;i++){
+      var r=rows[i];
+      var id=r[0]||('imp'+i);
+      if(!byId[id]){ byId[id]={ id:isNaN(parseInt(id))?(Date.now()+i):parseInt(id), name:r[1]||'', tag:r[2]||'', start:r[3]||'', due:r[4]||'', days:[] }; order.push(id); }
+      if(r[5]) byId[id].days.push({ iso:r[5], label:r[6]||'', title:r[7]||'', details:r[8]||'', light:(r[9]==='1') });
+    }
+    var imported=order.map(function(x){ return byId[x]; });
+    if(!imported.length){ alert('No valid rows found.'); return; }
+    if(!confirm('Found '+imported.length+' project(s).\nOK = REPLACE all current projects.\nCancel = keep current.')) return;
+    projects=imported; saveJSON('projects',projects); renderProjects(); alert('Imported '+projects.length+' project(s).');
+  }
+  document.getElementById('exportBtn').addEventListener('click', exportCSV);
+  document.getElementById('importBtn').addEventListener('click', function(){ document.getElementById('csvFile').click(); });
+  document.getElementById('csvFile').addEventListener('change', function(e){ var f=e.target.files[0]; if(!f) return; var rd=new FileReader(); rd.onload=function(){ importCSV(String(rd.result)); e.target.value=''; }; rd.readAsText(f); });
+
+  var panel=document.getElementById('panel');
+  document.getElementById('gear').addEventListener('click', function(){ document.getElementById('op').value=bg.opacity; document.getElementById('opV').textContent=bg.opacity+'%'; if(bg.color) document.getElementById('bgColor').value=bg.color; panel.classList.add('open'); });
+  document.getElementById('bgColor').addEventListener('input', function(e){ bg.type='color'; bg.color=e.target.value; bg.url=''; applyBg(); });
+  document.getElementById('op').addEventListener('input', function(e){ bg.opacity=parseInt(e.target.value); document.getElementById('opV').textContent=bg.opacity+'%'; applyBg(); });
+  var swc=['#ffd6d6','#ffe9c7','#fff7c7','#d6f5d6','#d6ecff','#e3d6ff','#ffd6f0','#e8e8e8'];
+  var swEl=document.getElementById('sw'); swc.forEach(function(c){ var d=document.createElement('div'); d.style.background=c; d.addEventListener('click', function(){ bg.type='color'; bg.color=c; bg.url=''; applyBg(); }); swEl.appendChild(d); });
+  document.getElementById('upBtn').addEventListener('click', function(){ document.getElementById('bgFile').click(); });
+  document.getElementById('bgFile').addEventListener('change', function(e){ var f=e.target.files[0]; if(!f) return; var rd=new FileReader(); rd.onload=function(){ var img=new Image(); img.onload=function(){ var mw=720,sc=Math.min(1,mw/img.width),w=Math.round(img.width*sc),h=Math.round(img.height*sc); var cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h); try{ bg.type='image'; bg.url=cv.toDataURL('image/jpeg',0.7); applyBg(); }catch(err){ alert('Could not process image.'); } }; img.src=rd.result; }; rd.readAsDataURL(f); e.target.value=''; });
+  document.getElementById('clr').addEventListener('click', function(){ bg={type:'color',color:'#ffffff',url:'',opacity:12}; document.getElementById('bgColor').value='#ffffff'; document.getElementById('op').value=12; document.getElementById('opV').textContent='12%'; applyBg(); });
+  document.getElementById('done').addEventListener('click', function(){ saveJSON('bg',bg); panel.classList.remove('open'); });
+  panel.addEventListener('click', function(e){ if(e.target===panel){ saveJSON('bg',bg); panel.classList.remove('open'); } });
+
+  // ---- editable app title ----
+  var titleEl=document.getElementById('appTitle');
+  var titleEditing=false;
+  var savedTitle=store('appTitle');
+  if(savedTitle){ titleEl.textContent=savedTitle; document.title=savedTitle; }
+  function commitTitle(){
+    titleEl.classList.remove('editing');
+    titleEl.contentEditable='false';
+    titleEditing=false;
+    var v=titleEl.textContent.replace(/\s+/g,' ').trim();
+    if(!v){ v='Deadline Planner'; }
+    titleEl.textContent=v;
+    store('appTitle', v);
+    document.title=v;
+  }
+  titleEl.addEventListener('click', function(){
+    if(titleEditing) return;
+    titleEditing=true;
+    titleEl.contentEditable='true';
+    titleEl.classList.add('editing');
+    titleEl.focus();
+    try{ var range=document.createRange(); range.selectNodeContents(titleEl); var sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(range); }catch(e){}
+  });
+  titleEl.addEventListener('keydown', function(e){
+    if(e.key==='Enter'){ e.preventDefault(); commitTitle(); titleEl.blur(); }
+    if(e.key==='Escape'){ e.preventDefault(); titleEl.textContent=store('appTitle')||'Deadline Planner'; commitTitle(); titleEl.blur(); }
+  });
+  titleEl.addEventListener('blur', function(){ if(titleEditing){ commitTitle(); } });
+
+  (function(){ var t=new Date(); document.getElementById('startDate').value=isoOf(t); })();
+  applyBg(); renderProjects(); renderDraft();
+})();
+</script>
+</body>
+</html>
